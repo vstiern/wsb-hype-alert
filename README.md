@@ -21,6 +21,7 @@ The following utilities are prerequisites to installing the app:
 - git
 - Python 3.8+ with pip and virtual environment (pip install venv)
 - User accounts for both IEXCloud and Reddit (both available for free)
+PS. App only tested with Python3.8.6. But might work with any Python 3.5+.
 
 Once these utilities are installed, the user can install the Python dependencies. Installing dependencies in a Python virtual environment prevents issues at the system level, but installing in a virtual environment is not required. 
 

@@ -1,6 +1,7 @@
 """All functions collecting and updating data for project."""
 
 import pandas as pd
+from pathlib import Path
 
 from src.aux_functions import get_config_section
 from src.db_functions import create_db, get_dash_data
@@ -13,7 +14,8 @@ def cold_start_initization():
     # get config file
     config = get_config_section()
 
-    # create tables
+    # create folder and tables
+    Path("./data/").mkdir(parents=True, exist_ok=True)
     create_db()
 
     # call iex api and get valid list of tickers
