@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgres:latest
+    env_file:               
+      - ./database.env
+    volumes:
+      - ./database-data:/var/lib/postgresql/data/         # persist data even if container shuts down
+    ports:
+      - '5432:5432'
+
+  data_collector:
+    build: ./data_collector
+    volumes: 
+      - ./data_collector:/usr/src/app
+    depends_on:
+      - postgres
+    
+  dashboard:
+    build: ./dashboard
+    volumes:
+      - ./dashboard:/user/src/app
+    depends_on:
+      - postgres
+    ports:
+      - '8050:8050'     # dashbaord

@@ -7,19 +7,15 @@ import pandas as pd
 import plotly.express as px
 from dash.dependencies import Output, Input
 
-from src.data_functions import cold_start_initization, get_app_data, get_new_reddit_data
+from src.aux_functions import *
 
-
-# collect initial data
-cold_start_initization()
-
-# get data from db
-df, tickers = get_app_data()
-print(f"Data initialized. Nr of rows: {len(df)}")
 
 # define app
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+
+# get dash data
+df, tickers = get_dash_data() 
 
 # app layout
 app.layout = html.Div([
@@ -28,7 +24,7 @@ app.layout = html.Div([
     html.Div([
             html.H1(children= "Don't believe the Hype! - the r/wallstreetbets Ticker Alert Dashboard!",
                     style={"text-align": "center", "font-size":"200%", 'font-weight': 'bold', "color":"black"}),
-        	html.Div(children="[Collects and updates new data every 5min]", 
+        	html.Div(children="[Updates every 2min -> new data from data collector app.]", 
                      style={"text-align": "center", 'width':'100%', 'font-weight': 'bold', "color":"black"})
 	# Position 1, descritpion
         ]),
@@ -52,22 +48,22 @@ app.layout = html.Div([
             dcc.RadioItems(
                 id='yaxis_raditem',
                 options=[
-                         {'label': 'Ticker comment mentions (Count)', 'value': 'count'},
-                         {'label': 'Ticker comment score (Sum)', 'value': 'score'},
+                         {'label': 'Ticker comment mentions (Count)', 'value': 'total_count'},
+                         {'label': 'Ticker comment score (Sum)', 'value': 'total_score'},
                 ],
-                value='count',
+                value='total_count',
                 style={"width": "50%"}
             ),
         ]),
 
     # graphs
     html.Div([
-        # data update -> new reddit data every 5min
+        # data update -> new data every 2min
         dcc.Interval(
                     id='my_interval',
                     disabled=False,         # if True, the counter will no longer update
-                    interval=5*60*1000,     # increment the counter n_intervals every interval milliseconds
-                    n_intervals=1,          # number of times the interval has passed
+                    interval=2*60*1000,     # increment the counter n_intervals every interval milliseconds
+                    n_intervals=0,          # number of times the interval has passed
                     max_intervals=-1,       # number of times the interval will be fired.
                                             # if -1, then the interval has no limit (the default)
                                             # and if 0 then the interval stops running.
@@ -102,8 +98,8 @@ def update_bar_chart(tickers, y_axis, jsonified_data):
     """Filter aggregate bar chart for selected tickers and y-axis."""
     df = pd.read_json(jsonified_data, orient='split')
     dff = df[df["ticker"].isin(tickers)]
-    dff = dff.groupby(["name", "ticker"])[y_axis].sum().nlargest(10).reset_index()
-    fig = px.bar(dff, x="name", y=y_axis, color="ticker")
+    dff = dff.groupby(["company_name", "ticker"])[y_axis].sum().nlargest(10).reset_index()
+    fig = px.bar(dff, x="company_name", y=y_axis, color="ticker")
     return fig
 
 # callback for timeseries graph
@@ -124,7 +120,7 @@ def update_ts_graph(hov_data, clk_data, y_axis, jsonified_data):
         return fig2
     else:
         hov_name = hov_data['points'][0]['x']
-        dff2 = df[df.name == hov_name]
+        dff2 = df[df.company_name == hov_name]
         fig2 = px.bar(dff2,  x="date_hour", y=y_axis, color="ticker", 
                       color_discrete_sequence=px.colors.qualitative.G10,
                       title=f'Mentions {y_axis} per date_hour for {hov_name}')
@@ -137,12 +133,22 @@ def update_ts_graph(hov_data, clk_data, y_axis, jsonified_data):
 )
 def refresh_data(value):
     """Update data for graphs."""
-    get_new_reddit_data()
-    df, tickers = get_app_data()
+    df = get_dash_dataframe()
     print(f"Data updated. Nr of rows: {len(df)}")
     j_df = df.to_json(date_format='iso', orient='split')
     return j_df
 
+# callback for updating ticker dropdown
+@app.callback(
+    Output(component_id='dropdown', component_property='options'),
+    Input(component_id='last-update', component_property='children')
+)
+def update_ticker_dropdown(jsonified_data):
+    """Update options for ticker dropdown after data update."""
+    df = pd.read_json(jsonified_data, orient='split')
+    tickers = get_dropdown_tickers(df)
+    return [{"label": x, "value": x} for x in tickers]
+
 
 if __name__ == "__main__":
-    app.run_server(debug=False)
+    app.run_server(debug=False, host='0.0.0.0', port=8050)

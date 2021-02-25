@@ -1,6 +1,6 @@
 # Don't Believe the Hype - r/wallstreetbets Ticker Alert
 
-This app collects and analyze data from the subreddit [www.reddit.com/r/wallstreetbets/](https://www.reddit.com/r/wallstreetbets/), a forum or subreddit on the social news website Reddit. The subreddit has gained a lot of popularity since the [GameStop short squeeze](https://en.wikipedia.org/wiki/GameStop_short_squeeze). Due to the forums ability to impact the market it could be of interest to know what finanical instruments, also known as tickers, is currently being discussed to anticipate increased volatility. 
+This app collects and analyze data from the subreddit [www.reddit.com/r/wallstreetbets/](https://www.reddit.com/r/wallstreetbets/), a forum or subreddit on the social news website Reddit. The subreddit has gained a lot of popularity since the [GameStop short squeeze](https://en.wikipedia.org/wiki/GameStop_short_squeeze). Due to the forums ability to impact the market it could be of interest to know what finanical instruments, also known as tickers, is currently being discussed to anticipate increased volatility.
 
 The ticker hype aleart dashboard consist of several elements:
 
