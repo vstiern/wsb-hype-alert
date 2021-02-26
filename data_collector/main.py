@@ -35,9 +35,14 @@ def main():
     # update data every with 5min sleep
     while True:
         reddit.get_new_data(subreddit_name="wallstreetbets",
-                            subreddit_params={"subreddit_sorting": "hot",
-                                              "limit": 1},
-                            comment_params={"limit": 1})
+                            subreddit_params={
+                                "subreddit_sorting": "hot",
+                                "limit": 1
+                                },
+                            comment_params={
+                                "limit": 1
+                                }
+                            )
         timer_min = 1
         print(f"Waiting for next call: {timer_min} min.")
         time.sleep(60*timer_min)
