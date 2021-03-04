@@ -11,9 +11,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the current directory contents to container
 COPY . /usr/src/app
 
-
 # Copy config file from main directory
-COPY ../config_file.ini /usr/src/app
+COPY ./config.ini /usr/src/app
 
 # Expose port for postgresql connection and dashboard
 EXPOSE 8000

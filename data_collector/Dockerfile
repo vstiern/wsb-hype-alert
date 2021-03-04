@@ -12,7 +12,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . /usr/src/app
 
 # Copy config file from main directory
-COPY ../config_file.ini /usr/src/app
+COPY ./config.ini /usr/src/app
 
 # Expose port for postgresql connection
 EXPOSE 8000
